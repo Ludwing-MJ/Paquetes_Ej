@@ -13,28 +13,24 @@ if (!require("writexl")) install.packages("writexl")
 ## Establecer directorio de trabajo automaticamente
 if (!require("rstudioapi")) install.packages("rstudioapi")
 
-# Importar datos desde un archivo Excel
+
+# Carga de datos
 altura_pino <- read_excel("datos_arboles.xlsx")
 
-# Análisis de varianza
+# Análisis de varianza y comparaciones múltiples
 modelo_anova <- aov(altura_ft ~ tratamiento, data = altura_pino)
-summary(modelo_anova)
-
-# Prueba de Tukey
+summary (modelo_anova)
 comparacion_tukey <- HSD.test(modelo_anova, "tratamiento")
-print(comparacion_tukey)
-
+comparacion_tukey$groups
 # Visualización de resultados
 ggplot(altura_pino, aes(x = tratamiento, y = altura_ft, fill = tratamiento)) +
   geom_boxplot() +
   labs(title = "Altura por Tratamiento",
        x = "Tratamiento",
-       y = "Altura en pies")+
-  theme_minimal()+ # Establece el tema del gráfico 
-  theme(legend.position = "none")  # Remueve la leyenda redundante
+       y = "Altura en pies") +
+  theme_minimal() +
+  theme(legend.position = "none")
 
-# Exportar resultados a Excel
-write_xlsx(comparacion_tukey$groups, "resultados_tukey.xlsx", col_names = T, format_headers = T, use_zip64 = F)
-
-# Exportar gráficos
+# Exportación de resultados
+write_xlsx(comparacion_tukey$groups, "resultados_tukey.xlsx")
 ggsave("ggplot_pino.png")
